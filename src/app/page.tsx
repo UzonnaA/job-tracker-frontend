@@ -22,11 +22,21 @@ export default function Home() {
 
   // Fetch all applications
   const fetchApplications = () => {
-    fetch('http://localhost:8080/api/applications')
-      .then((res) => res.json())
-      .then((data) => setApplications(data))
-      .catch((err) => console.error('Error fetching jobs:', err))
-  }
+  const params = new URLSearchParams()
+
+  if (filterCompany) params.append('company', filterCompany)
+  if (filterStatus) params.append('status', filterStatus)
+  if (filterTag) params.append('tag', filterTag)
+
+  fetch(`http://localhost:8080/api/applications?${params.toString()}`)
+    .then((res) => res.json())
+    .then((data) => setApplications(data))
+    .catch((err) => console.error('Error fetching jobs:', err))
+}
+
+  const [filterCompany, setFilterCompany] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [filterTag, setFilterTag] = useState('')
 
   useEffect(() => {
     fetchApplications()
@@ -75,6 +85,42 @@ export default function Home() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Job Applications</h1>
+
+      <div className="mb-6">
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Filter by company"
+          value={filterCompany}
+          onChange={(e) => setFilterCompany(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">All Statuses</option>
+          <option value="APPLIED">Applied</option>
+          <option value="INTERVIEW">Interview</option>
+          <option value="OFFER">Offer</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Filter by tag"
+          value={filterTag}
+          onChange={(e) => setFilterTag(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+        <button
+          onClick={fetchApplications}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
+        </div>
+      </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 shadow rounded mb-8">
