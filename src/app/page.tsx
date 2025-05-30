@@ -8,6 +8,7 @@ type JobApplication = {
   company: string
   status: string
   applicationDate: string
+  tags: string[]
 }
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
     company: '',
     status: '',
     applicationDate: '',
+    tags: [],
   })
   const [editingId, setEditingId] = useState<number | null>(null)
 
@@ -37,10 +39,25 @@ export default function Home() {
   const [filterCompany, setFilterCompany] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterTag, setFilterTag] = useState('')
+  const [tagInput, setTagInput] = useState('')
 
   useEffect(() => {
     fetchApplications()
   }, [])
+
+  // Handle tag changes
+  const handleAddTag = () => {
+    if (tagInput.trim() !== '') {
+      setFormData({ ...formData, tags: [...formData.tags, tagInput.trim()] })
+      setTagInput('')
+    }
+  }
+
+  const handleRemoveTag = (index: number) => {
+    const updatedTags = [...formData.tags]
+    updatedTags.splice(index, 1)
+    setFormData({ ...formData, tags: updatedTags })
+  }
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -63,7 +80,7 @@ export default function Home() {
     })
       .then(() => {
         fetchApplications()
-        setFormData({ jobTitle: '', company: '', status: '', applicationDate: '' })
+        setFormData({ jobTitle: '', company: '', status: '', applicationDate: '', tags: [] })
         setEditingId(null)
       })
       .catch((err) => console.error('Error saving job:', err))
@@ -163,6 +180,46 @@ export default function Home() {
           className="w-full p-2 border rounded"
           required
         />
+
+        {/* Tag input */}
+        <div>
+          <label className="block font-medium mb-1">Tags</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              placeholder="Enter a tag"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <button
+              type="button"
+              onClick={handleAddTag}
+              className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
+            >
+              Add
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {formData.tags.map((tag, index) => (
+              <span key={index} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveTag(index)}
+                  className="text-red-600 hover:text-red-800 font-bold"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+
+
+
+        
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -179,6 +236,7 @@ export default function Home() {
               <p className="font-semibold text-lg">{app.jobTitle} @ {app.company}</p>
               <p>Status: {app.status}</p>
               <p>Date: {app.applicationDate}</p>
+              <p>Tags: {app.tags?.join(', ') || 'None'}</p>
             </div>
             <div className="flex gap-2">
               <button
