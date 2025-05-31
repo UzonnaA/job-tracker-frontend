@@ -1,34 +1,27 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Link from 'next/link'
+import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Job Tracker Application",
-  description: "An application that allows you to simply add and view job applications",
-};
+  title: 'Job Tracker',
+  description: 'Track your job applications',
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className="bg-gray-100 text-gray-800 min-h-screen">
+        <nav className="bg-white shadow px-6 py-4 mb-6">
+          <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+            <Link href="/" className="text-xl font-bold text-blue-600">Job Tracker</Link>
+            <div className="flex gap-4">
+              <Link href="/add" className="text-blue-600 hover:underline">Add</Link>
+              <Link href="/search" className="text-blue-600 hover:underline">Search</Link>
+            </div>
+          </div>
+        </nav>
+        <main className="px-6">{children}</main>
       </body>
     </html>
-  );
+  )
 }

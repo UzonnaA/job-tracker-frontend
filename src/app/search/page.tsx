@@ -1,0 +1,235 @@
+'use client'
+import { useEffect, useState } from 'react'
+
+type JobApplication = {
+  id?: number
+  jobTitle: string
+  company: string
+  status: string
+  applicationDate: string
+  tags: string[]
+}
+
+export default function SearchPage() {
+  const [applications, setApplications] = useState<JobApplication[]>([])
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<JobApplication | null>(null)
+  const [tagInput, setTagInput] = useState('')
+  const [filterCompany, setFilterCompany] = useState('')
+  const [filterStatus, setFilterStatus] = useState('')
+  const [filterTag, setFilterTag] = useState('')
+
+  const fetchApplications = () => {
+    const params = new URLSearchParams()
+    if (filterCompany) params.append('company', filterCompany)
+    if (filterStatus) params.append('status', filterStatus)
+    if (filterTag) params.append('tag', filterTag)
+
+    fetch(`http://localhost:8080/api/applications?${params.toString()}`)
+      .then((res) => res.json())
+      .then((data) => setApplications(data))
+      .catch((err) => console.error('Error fetching jobs:', err))
+  }
+
+  useEffect(() => {
+    fetchApplications()
+  }, [])
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (!editForm) return
+    setEditForm({ ...editForm, [e.target.name]: e.target.value })
+  }
+
+  const handleAddTag = () => {
+    if (!editForm || tagInput.trim() === '') return
+    setEditForm({ ...editForm, tags: [...editForm.tags, tagInput.trim()] })
+    setTagInput('')
+  }
+
+  const handleRemoveTag = (index: number) => {
+    if (!editForm) return
+    const updatedTags = [...editForm.tags]
+    updatedTags.splice(index, 1)
+    setEditForm({ ...editForm, tags: updatedTags })
+  }
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingId || !editForm) return
+
+    fetch(`http://localhost:8080/api/applications/${editingId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editForm),
+    })
+      .then(() => {
+        fetchApplications()
+        setEditingId(null)
+        setEditForm(null)
+        setTagInput('')
+      })
+      .catch((err) => console.error('Error updating job:', err))
+  }
+
+  const handleEditClick = (app: JobApplication) => {
+    setEditingId(app.id || null)
+    setEditForm(app)
+    setTagInput('')
+  }
+
+  const handleDelete = (id: number) => {
+    fetch(`http://localhost:8080/api/applications/${id}`, { method: 'DELETE' })
+      .then(() => fetchApplications())
+      .catch((err) => console.error('Error deleting job:', err))
+  }
+
+  return (
+    <div className="p-6 max-w-screen-xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Search Job Applications</h1>
+
+      {/* Filters */}
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Filter by company"
+          value={filterCompany}
+          onChange={(e) => setFilterCompany(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">All Statuses</option>
+          <option value="APPLIED">Applied</option>
+          <option value="INTERVIEW">Interview</option>
+          <option value="OFFER">Offer</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Filter by tag"
+          value={filterTag}
+          onChange={(e) => setFilterTag(e.target.value)}
+          className="border p-2 rounded w-full"
+        />
+        <button
+          onClick={fetchApplications}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* Grid List */}
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {applications.map((app) => (
+          <li
+            key={app.id}
+            className="p-4 border rounded shadow bg-white flex flex-col justify-between"
+          >
+            {editingId === app.id ? (
+              <form onSubmit={handleEditSubmit} className="space-y-2">
+                <input
+                  type="text"
+                  name="jobTitle"
+                  value={editForm?.jobTitle || ''}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+                <input
+                  type="text"
+                  name="company"
+                  value={editForm?.company || ''}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+                <select
+                  name="status"
+                  value={editForm?.status || ''}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="APPLIED">Applied</option>
+                  <option value="INTERVIEW">Interview</option>
+                  <option value="OFFER">Offer</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                <input
+                  type="date"
+                  name="applicationDate"
+                  value={editForm?.applicationDate || ''}
+                  onChange={handleEditChange}
+                  className="w-full p-2 border rounded"
+                />
+                <div>
+                  <label className="block font-medium mb-1">Tags</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Add tag"
+                      value={tagInput}
+                      onChange={(e) => setTagInput(e.target.value)}
+                      className="border p-2 rounded w-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddTag}
+                      className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {editForm?.tags.map((tag, index) => (
+                      <span key={index} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTag(index)}
+                          className="text-red-600 hover:text-red-800 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                >
+                  Save
+                </button>
+              </form>
+            ) : (
+              <div className="flex flex-col justify-between h-full">
+                <div>
+                  <p className="font-semibold text-lg mb-1">{app.jobTitle} @ {app.company}</p>
+                  <p className="text-sm mb-1">Status: {app.status}</p>
+                  <p className="text-sm mb-1">Date: {app.applicationDate}</p>
+                  <p className="text-sm mb-2">Tags: {app.tags?.join(', ') || 'None'}</p>
+                </div>
+                <div className="flex gap-2 mt-auto">
+                  <button
+                    onClick={() => handleEditClick(app)}
+                    className="px-3 py-1 bg-yellow-400 rounded hover:bg-yellow-500 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(app.id!)}
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700 text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
