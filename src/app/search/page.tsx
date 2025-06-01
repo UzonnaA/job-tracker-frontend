@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 
+// Type definition for job application objects
 type JobApplication = {
   id?: number
   jobTitle: string
@@ -11,6 +12,7 @@ type JobApplication = {
 }
 
 export default function SearchPage() {
+  // State variables for job applications and form control
   const [applications, setApplications] = useState<JobApplication[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editForm, setEditForm] = useState<JobApplication | null>(null)
@@ -19,6 +21,7 @@ export default function SearchPage() {
   const [filterStatus, setFilterStatus] = useState('')
   const [filterTag, setFilterTag] = useState('')
 
+  // Fetches applications from the backend with optional filters
   const fetchApplications = () => {
     const params = new URLSearchParams()
     if (filterCompany) params.append('company', filterCompany)
@@ -31,21 +34,25 @@ export default function SearchPage() {
       .catch((err) => console.error('Error fetching jobs:', err))
   }
 
+  // Initial fetch when component mounts
   useEffect(() => {
     fetchApplications()
   }, [])
 
+  // Handles input changes for edit form fields
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!editForm) return
     setEditForm({ ...editForm, [e.target.name]: e.target.value })
   }
 
+  // Adds a new tag to the edit form
   const handleAddTag = () => {
     if (!editForm || tagInput.trim() === '') return
     setEditForm({ ...editForm, tags: [...editForm.tags, tagInput.trim()] })
     setTagInput('')
   }
 
+  // Removes a tag by index from the edit form
   const handleRemoveTag = (index: number) => {
     if (!editForm) return
     const updatedTags = [...editForm.tags]
@@ -53,6 +60,7 @@ export default function SearchPage() {
     setEditForm({ ...editForm, tags: updatedTags })
   }
 
+  // Submits the updated job application to the backend
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingId || !editForm) return
@@ -71,12 +79,14 @@ export default function SearchPage() {
       .catch((err) => console.error('Error updating job:', err))
   }
 
+  // Populates the edit form with the selected application
   const handleEditClick = (app: JobApplication) => {
     setEditingId(app.id || null)
     setEditForm(app)
     setTagInput('')
   }
 
+  // Deletes the specified application
   const handleDelete = (id: number) => {
     fetch(`http://localhost:8080/api/applications/${id}`, { method: 'DELETE' })
       .then(() => fetchApplications())
@@ -87,7 +97,7 @@ export default function SearchPage() {
     <div className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">Search Job Applications</h1>
 
-      {/* Filters */}
+      {/* Filter inputs for searching applications */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <input
           type="text"
@@ -122,7 +132,7 @@ export default function SearchPage() {
         </button>
       </div>
 
-      {/* Grid List */}
+      {/* Render list of job applications */}
       <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {applications.map((app) => (
           <li
@@ -130,6 +140,7 @@ export default function SearchPage() {
             className="p-4 border border-gray-300 rounded-xl shadow-sm bg-white hover:shadow-md transition"
           >
             {editingId === app.id ? (
+              // Editable form view for a job application
               <form onSubmit={handleEditSubmit} className="space-y-2">
                 <input
                   type="text"
@@ -163,6 +174,7 @@ export default function SearchPage() {
                   onChange={handleEditChange}
                   className="w-full p-2 border rounded"
                 />
+                {/* Tag management section */}
                 <div>
                   <label className="block font-medium mb-1">Tags</label>
                   <div className="flex gap-2 mb-2">
@@ -204,6 +216,7 @@ export default function SearchPage() {
                 </button>
               </form>
             ) : (
+              // Static view for a job application
               <div className="flex flex-col justify-between h-full">
                 <div>
                   <p className="font-semibold text-lg mb-1 text-gray-800">{app.jobTitle} @ {app.company}</p>
