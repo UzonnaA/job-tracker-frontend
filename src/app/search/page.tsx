@@ -85,21 +85,21 @@ export default function SearchPage() {
 
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Search Job Applications</h1>
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">Search Job Applications</h1>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <input
           type="text"
           placeholder="Filter by company"
           value={filterCompany}
           onChange={(e) => setFilterCompany(e.target.value)}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
         />
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Statuses</option>
           <option value="APPLIED">Applied</option>
@@ -112,22 +112,22 @@ export default function SearchPage() {
           placeholder="Filter by tag"
           value={filterTag}
           onChange={(e) => setFilterTag(e.target.value)}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={fetchApplications}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full"
         >
           Search
         </button>
       </div>
 
       {/* Grid List */}
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {applications.map((app) => (
           <li
             key={app.id}
-            className="p-4 border rounded shadow bg-white flex flex-col justify-between"
+            className="p-4 border border-gray-300 rounded-xl shadow-sm bg-white hover:shadow-md transition"
           >
             {editingId === app.id ? (
               <form onSubmit={handleEditSubmit} className="space-y-2">
@@ -183,7 +183,7 @@ export default function SearchPage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {editForm?.tags.map((tag, index) => (
-                      <span key={index} className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1">
+                      <span key={index} className="bg-gray-200 px-2 py-1 rounded-full flex items-center gap-1 text-sm">
                         {tag}
                         <button
                           type="button"
@@ -198,7 +198,7 @@ export default function SearchPage() {
                 </div>
                 <button
                   type="submit"
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full"
                 >
                   Save
                 </button>
@@ -206,21 +206,21 @@ export default function SearchPage() {
             ) : (
               <div className="flex flex-col justify-between h-full">
                 <div>
-                  <p className="font-semibold text-lg mb-1">{app.jobTitle} @ {app.company}</p>
-                  <p className="text-sm mb-1">Status: {app.status}</p>
-                  <p className="text-sm mb-1">Date: {app.applicationDate}</p>
-                  <p className="text-sm mb-2">Tags: {app.tags?.join(', ') || 'None'}</p>
+                  <p className="font-semibold text-lg mb-1 text-gray-800">{app.jobTitle} @ {app.company}</p>
+                  <p className="text-sm text-gray-600 mb-1">Status: {app.status}</p>
+                  <p className="text-sm text-gray-600 mb-1">Date: {app.applicationDate}</p>
+                  <p className="text-sm text-gray-600 mb-2">Tags: {app.tags?.join(', ') || ''}</p>
                 </div>
                 <div className="flex gap-2 mt-auto">
                   <button
                     onClick={() => handleEditClick(app)}
-                    className="px-3 py-1 bg-yellow-400 rounded hover:bg-yellow-500 text-sm"
+                    className="px-3 py-1 bg-yellow-400 rounded hover:bg-yellow-500 text-sm font-medium"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(app.id!)}
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700 text-sm"
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-900 text-sm font-medium"
                   >
                     Delete
                   </button>
