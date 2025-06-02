@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-// Type definition for a job application
 type JobApplication = {
   id?: number
   jobTitle: string
@@ -12,7 +11,6 @@ type JobApplication = {
 }
 
 export default function AddPage() {
-  // Form state for new job application input
   const [formData, setFormData] = useState<JobApplication>({
     jobTitle: '',
     company: '',
@@ -21,25 +19,19 @@ export default function AddPage() {
     tags: [],
   })
 
-  // Temporary input state for adding a tag
   const [tagInput, setTagInput] = useState('')
-
-  // State to store the four most recently added job applications
   const [recentApps, setRecentApps] = useState<JobApplication[]>([])
 
-  // On component mount, fetch all applications and store the last 4 entries
   useEffect(() => {
     fetch('http://localhost:8080/api/applications')
       .then((res) => res.json())
       .then((data) => setRecentApps(data.slice(-4).reverse()))
   }, [])
 
-  // Handles changes in form inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  // Adds a new tag to the form state
   const handleAddTag = () => {
     if (tagInput.trim() !== '') {
       setFormData({ ...formData, tags: [...formData.tags, tagInput.trim()] })
@@ -47,25 +39,24 @@ export default function AddPage() {
     }
   }
 
-  // Removes a tag by its index from the form state
   const handleRemoveTag = (index: number) => {
     const updated = [...formData.tags]
     updated.splice(index, 1)
     setFormData({ ...formData, tags: updated })
   }
 
-  // Handles submission of the form and posts the data to the backend
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
     fetch('http://localhost:8080/api/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     })
       .then(() => {
-        // Reset form after successful submission
         setFormData({ jobTitle: '', company: '', status: '', applicationDate: '', tags: [] })
-        // Refresh recent applications
+
+        // Refresh list of recent applications
         return fetch('http://localhost:8080/api/applications')
       })
       .then(res => res.json())
@@ -74,10 +65,10 @@ export default function AddPage() {
 
   return (
     <div className="p-6 max-w-xl mx-auto">
-      {/* Page title */}
-      <h1 className="text-3xl font-extrabold mb-6 text-center text-gray-800">Add Job Application</h1>
+      <h1 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+        Add Job Application
+      </h1>
 
-      {/* Form for submitting a new job application */}
       <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 shadow-md rounded-xl">
         <input
           name="jobTitle"
@@ -154,7 +145,6 @@ export default function AddPage() {
           </div>
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition"
@@ -163,8 +153,9 @@ export default function AddPage() {
         </button>
       </form>
 
-      {/* Recently added job applications preview */}
-      <h2 className="text-xl font-semibold mb-4 mt-8 text-gray-800">Recently Added Applications</h2>
+      <h2 className="text-xl font-semibold mb-4 mt-8 text-gray-800">
+        Recently Added Applications
+      </h2>
       <ul className="space-y-4">
         {recentApps.map(app => (
           <li key={app.id} className="p-4 border rounded-xl shadow-sm bg-white">
@@ -178,4 +169,3 @@ export default function AddPage() {
     </div>
   )
 }
-
