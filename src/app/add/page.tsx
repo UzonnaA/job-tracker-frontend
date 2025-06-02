@@ -23,7 +23,7 @@ export default function AddPage() {
   const [recentApps, setRecentApps] = useState<JobApplication[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/applications')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications`)
       .then((res) => res.json())
       .then((data) => setRecentApps(data.slice(-4).reverse()))
   }, [])
@@ -48,7 +48,7 @@ export default function AddPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    fetch('http://localhost:8080/api/applications', {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
@@ -57,7 +57,7 @@ export default function AddPage() {
         setFormData({ jobTitle: '', company: '', status: '', applicationDate: '', tags: [] })
 
         // Refresh list of recent applications
-        return fetch('http://localhost:8080/api/applications')
+        return fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications`)
       })
       .then(res => res.json())
       .then(data => setRecentApps(data.slice(-4).reverse()))

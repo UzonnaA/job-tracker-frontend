@@ -25,7 +25,7 @@ export default function SearchPage() {
     if (filterStatus) params.append('status', filterStatus)
     if (filterTag) params.append('tag', filterTag)
 
-    fetch(`http://localhost:8080/api/applications?${params.toString()}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => setApplications(data))
       .catch((err) => console.error('Error fetching jobs:', err))
@@ -57,7 +57,7 @@ export default function SearchPage() {
     e.preventDefault()
     if (!editingId || !editForm) return
 
-    fetch(`http://localhost:8080/api/applications/${editingId}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications/${editingId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editForm),
@@ -78,7 +78,7 @@ export default function SearchPage() {
   }
 
   const handleDelete = (id: number) => {
-    fetch(`http://localhost:8080/api/applications/${id}`, { method: 'DELETE' })
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications/${id}`, { method: 'DELETE' })
       .then(() => fetchApplications())
       .catch((err) => console.error('Error deleting job:', err))
   }
