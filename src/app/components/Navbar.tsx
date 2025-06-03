@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { logout } from '@/utils/api'
+import { Plus, Search, BarChart2, Wrench } from 'lucide-react'
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -18,15 +19,10 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    syncAuthState() // check once on mount
-
-    // Listen to changes across tabs/windows
+    syncAuthState()
     const handleStorage = () => syncAuthState()
     window.addEventListener('storage', handleStorage)
-
-    // Recheck on route change
     const interval = setInterval(syncAuthState, 1000)
-
     return () => {
       window.removeEventListener('storage', handleStorage)
       clearInterval(interval)
@@ -42,23 +38,29 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white shadow p-4 flex justify-between items-center">
       <Link href="/" className="text-xl font-bold text-blue-600">
-        Job Tracker 
+        Job Tracker
       </Link>
 
-
       {isAuthenticated && (
-        <div className="flex items-center gap-4">
-            
-            <Link href="/add" className="text-gray-700 hover:text-blue-600">Add</Link>
-            <Link href="/search" className="text-gray-700 hover:text-blue-600">Search</Link>
-            <Link href="/stats" className="text-gray-700 hover:text-blue-600">Stats</Link>
-            <Link href="/settings" className="text-gray-700 hover:text-blue-600">Settings</Link>
-          
+        <div className="flex items-center gap-5">
+          <Link href="/add" className="text-gray-700 hover:text-blue-600">
+            <Plus className="w-5 h-5" />
+          </Link>
+          <Link href="/search" className="text-gray-700 hover:text-blue-600">
+            <Search className="w-5 h-5" />
+          </Link>
+          <Link href="/stats" className="text-gray-700 hover:text-blue-600">
+            <BarChart2 className="w-5 h-5" />
+          </Link>
+          <Link href="/settings" className="text-gray-700 hover:text-blue-600">
+            <Wrench className="w-5 h-5" />
+          </Link>
+
           <button
             onClick={handleLogout}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-900 transition"
           >
-            Logout (<span className="text-white font-medium">{username}</span>)
+            Logout (<span className="font-medium">{username}</span>)
           </button>
         </div>
       )}
