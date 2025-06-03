@@ -52,6 +52,7 @@ export default function Navbar() {
             <Link href="/add" className="text-gray-700 hover:text-blue-600">Add</Link>
             <Link href="/search" className="text-gray-700 hover:text-blue-600">Search</Link>
             <Link href="/stats" className="text-gray-700 hover:text-blue-600">Stats</Link>
+            <Link href="/settings" className="text-gray-700 hover:text-blue-600">Settings</Link>
           
           <button
             onClick={handleLogout}
