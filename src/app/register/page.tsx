@@ -46,7 +46,7 @@ export default function RegisterPage() {
         {success && <p className="text-green-600 text-sm">{success}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-900"
         >
           Register
         </button>

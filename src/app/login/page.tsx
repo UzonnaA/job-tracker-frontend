@@ -51,13 +51,13 @@ export default function LoginPage() {
         {error && <p className="text-red-600 text-sm">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-900"
         >
           Login
         </button>
       </form>
       <p className="mt-4 text-sm text-center text-gray-600">
-          Don't have an account? <a href="/register" className="text-blue-600 hover:underline">Register</a>
+          Don't have an account? <a href="/register" className="text-red-600 hover:underline">Register</a>
         </p>
     </div>
   );
