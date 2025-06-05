@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { logout } from '@/utils/api'
+import { deleteAccount, deleteAllApplications } from '@/utils/api'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -20,37 +21,6 @@ export default function SettingsPage() {
       setLoading(false)
     }
   }
-
-  const deleteAccount = async () => {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/delete-account`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-    if (!res.ok) throw new Error('Failed to delete account')
-    logout()
-    router.push('/login')
-  }
-
-  const deleteAllApplications = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications`, {
-        method: 'DELETE',
-        headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        },
-    });
-
-    if (!res.ok) throw new Error('Failed to delete applications');
-
-    setMessage('All applications deleted successfully.');
-    };
-
-
   return (
     <div className="max-w-md mx-auto mt-10 bg-white shadow p-6 rounded">
       <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">⚙️ Settings</h1>

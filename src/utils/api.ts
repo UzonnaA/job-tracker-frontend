@@ -34,6 +34,15 @@ export async function register(username: string, password: string): Promise<void
 export function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('username');
+  window.location.href = '/login'
+}
+
+function handleExpiredToken(res: Response) {
+  if (res.status === 401 || res.status === 403) {
+    logout()
+    throw new Error('Session expired. Please log in again.')
+  }
+  return res
 }
 
 // Helper to get headers with Authorization token
@@ -50,6 +59,8 @@ export async function getApplications(): Promise<any[]> {
     method: 'GET',
     headers: getAuthHeaders(),
   });
+
+  handleExpiredToken(res)
 
   if (res.status === 403) {
     logout()
@@ -71,12 +82,39 @@ export async function createApplication(application: any): Promise<any> {
     body: JSON.stringify(application),
   });
 
+  handleExpiredToken(res)
+
   if (!res.ok) {
     throw new Error('Failed to create application');
   }
 
   return await res.json();
 }
+
+
+export async function deleteAllApplications(): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/applications`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  handleExpiredToken(res);
+  if (!res.ok) {
+    throw new Error('Failed to delete applications');
+  }
+}
+
+export async function deleteAccount(): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/delete-account`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  handleExpiredToken(res);
+  if (!res.ok) {
+    throw new Error('Failed to delete account');
+  }
+  logout();
+}
+
 
 
 
